@@ -1,35 +1,41 @@
 <?php
-    /**
-     * Created by PhpStorm.
-     * User: basili4
-     * Date: 11.03.18
-     * Time: 23:46
-     */
+/**
+ * Created by PhpStorm.
+ * User: basili4
+ * Date: 11.03.18
+ * Time: 23:46
+ */
 
-    namespace pshell\Inc;
+namespace pshell\Inc;
 
 
-    class Output
+class Output
+{
+    public static function write($message)
     {
-        public static function write($message)
-        {
-
-            if (is_array($message)) {
-                $message = self::convertArrayToString($message);
-            }
-
-            echo $message;
+        if (is_array($message)) {
+            $message = self::convertArrayToString($message);
         }
 
-        public static function writeLn($message)
-        {
-            echo self::write($message);
-            echo PHP_EOL;
+        foreach (Storage::list() as $key => $val) {
+            $message = str_replace("%{$key}%", $val, $message);
         }
 
-        protected static function convertArrayToString($array)
-        {
-            return implode(',', $array);
+        if (Mode::isPrintTaskNumber()) {
+            echo "Шаг " . Storage::get(Storage::STEP_INDEX) . " ";
         }
-
+        echo $message;
     }
+
+    public static function writeLn($message)
+    {
+        echo self::write($message);
+        echo PHP_EOL;
+    }
+
+    protected static function convertArrayToString($array)
+    {
+        return implode(',', $array);
+    }
+
+}
